@@ -11,33 +11,41 @@ export class TextImageMixer {
 
     app: PIXI.Application;
     content: any;
-    fontSize: number = 20;
+    fontSize: number = 10;
     sceneObjects: any = [];
     bunnyTexture: PIXI.BaseTexture;
     displayChangerInterval: NodeJS.Timer;
     dummyTexts: string[] = ["hello", "world", "soft", "games", "dev", "test"];
 
     PopulateDisplayArray() {
-        let posX = (this.app.renderer.width / 2) - (this.content.length * this.fontSize);
+        let posX = ((this.app.renderer.width / 2) - (this.content.length * this.fontSize)) < 20 ? 20 : (this.app.renderer.width / 2) - (this.content.length * this.fontSize);
+        let posY = this.app.renderer.height / 2;
         this.content.forEach((element: string | number) => {
             if (typeof element === 'string') {
                 let text = new PIXI.Text(`${element}`, { fontFamily: 'Arial', fontSize: this.fontSize, fill: 0x11dbb3, align: 'center' });
                 this.sceneObjects.push(text);
-                text.position.set(posX, this.app.renderer.height / 2);
+                text.position.set(posX, posY);
                 this.app.stage.addChild(text);
                 posX += text.width + (this.fontSize / 2);
+                if (posX > this.app.renderer.width - 50) {
+                    posX = 20;
+                    posY = posY + this.fontSize * 2;
+                }
             } else {
                 let spawnSpriteFunc = this.SpawnSprite.bind(this);
                 let bunny = spawnSpriteFunc();
                 this.sceneObjects.push(bunny);
                 bunny.x = posX;
-                bunny.y = this.app.renderer.height / 2;
+                bunny.y = posY;
                 bunny.height = this.fontSize;
                 bunny.width = this.fontSize;
 
                 this.app.stage.addChild(bunny);
                 posX += bunny.width + (this.fontSize / 2);
-
+                if (posX > this.app.renderer.width - 50) {
+                    posX = 20;
+                    posY = posY + this.fontSize * 2;
+                }
             }
 
         });
@@ -51,7 +59,7 @@ export class TextImageMixer {
             if (element.texture != null)
                 element.destroy();
         });
-        this.fontSize = this.getRandomInt(15, 50);
+        this.fontSize = this.getRandomInt(10, 40);
         let size: number = this.getRandomInt(0, 10);
         this.content.length = 0;
         for (let i = 0; i < size; i++) {
