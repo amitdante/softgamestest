@@ -1,141 +1,122 @@
-import * as PIXI from "pixi.js";
 import particles = require('pixi-particles');
-
+import * as PIXI from "pixi.js";
 
 export class FireEffect {
-    constructor(app: PIXI.Application, texture: PIXI.BaseTexture) {
+    constructor(app: PIXI.Application) {
         this.app = app;
-        this.flameTexture = new PIXI.Texture(texture);
-
-        this.StartParticle();
+        this.LoadEverything();
     }
-    flameTexture: PIXI.Texture;
     app: PIXI.Application;
-    container: PIXI.Container;
-    myEmitter: particles.Emitter;
+    myContainer: PIXI.ParticleContainer = new PIXI.ParticleContainer();
+    elapsed: number = Date.now();
+    flameInterval: NodeJS.Timer;
+    myEmitter: particles.Emitter = new particles.Emitter(
+        this.myContainer,
 
-    StartParticle() {
-        this.myEmitter = new particles.Emitter(
 
-            // The PIXI.Container to put the emitter in
-            // if using blend modes, it's important to put this
-            // on top of a bitmap, and not use the root stage Container
-            this.container,
+        [PIXI.Texture.from("./assets/fire3.png")],
 
-            // The collection of particle images to use
-            [this.flameTexture],
-
-            // Emitter configuration, edit this to change the look
-            // of the emitter
-            {
-                alpha: {
-                    list: [
-                        {
-                            value: 0.8,
-                            time: 0
-                        },
-                        {
-                            value: 0.1,
-                            time: 1
-                        }
-                    ],
-                    isStepped: false
-                },
-                scale: {
-                    list: [
-                        {
-                            value: 1,
-                            time: 0
-                        },
-                        {
-                            value: 0.3,
-                            time: 1
-                        }
-                    ],
-                    isStepped: false
-                },
-                color: {
-                    list: [
-                        {
-                            value: "fb1010",
-                            time: 0
-                        },
-                        {
-                            value: "f5b830",
-                            time: 1
-                        }
-                    ],
-                    isStepped: false
-                },
-                speed: {
-                    list: [
-                        {
-                            value: 200,
-                            time: 0
-                        },
-                        {
-                            value: 100,
-                            time: 1
-                        }
-                    ],
-                    isStepped: false
-                },
-                startRotation: {
-                    min: 0,
-                    max: 360
-                },
-                rotationSpeed: {
-                    min: 0,
-                    max: 0
-                },
-                lifetime: {
-                    min: 0.5,
-                    max: 0.5
-                },
-                frequency: 0.008,
-                spawnChance: 1,
-                particlesPerWave: 1,
-                emitterLifetime: 0.31,
-                maxParticles: 1000,
-                pos: {
-                    x: 0,
-                    y: 0
-                },
-                addAtBack: false,
-                spawnType: "circle",
-                spawnCircle: {
-                    x: 0,
-                    y: 0,
-                    r: 10
-                }
+        {
+            alpha: {
+                list: [
+                    {
+                        value: 0.8,
+                        time: 0
+                    },
+                    {
+                        value: 0.1,
+                        time: 1
+                    }
+                ],
+                isStepped: false
+            },
+            scale: {
+                list: [
+                    {
+                        value: 0.7,
+                        time: 0
+                    },
+                    {
+                        value: 0.2,
+                        time: 1
+                    }
+                ],
+                isStepped: false
+            },
+            color: {
+                list: [
+                    {
+                        value: "fff191",
+                        time: 0
+                    },
+                    {
+                        value: "ff622c",
+                        time: 1
+                    }
+                ],
+                isStepped: false
+            },
+            speed: {
+                list: [
+                    {
+                        value: 500,
+                        time: 0
+                    },
+                    {
+                        value: 500,
+                        time: 1
+                    }
+                ],
+                isStepped: false
+            },
+            startRotation: {
+                min: 265,
+                max: 275
+            },
+            rotationSpeed: {
+                min: 50,
+                max: 50
+            },
+            lifetime: {
+                min: 0.1,
+                max: 0.7
+            },
+            blendMode: "normal",
+            frequency: 0.001,
+            spawnChance: 1,
+            particlesPerWave: 1,
+            emitterLifetime: 0,
+            maxParticles: 30,
+            pos: {
+                x: 0,
+                y: 0
+            },
+            addAtBack: false,
+            spawnType: "circle",
+            spawnCircle: {
+                x: 0,
+                y: 0,
+                r: 10
             }
-        );
-        let updateFunc = this.update.bind(this);
-        updateFunc();
+        });
+
+    LoadEverything() {
+        this.myContainer.x = this.app.renderer.width / 2;
+        this.myContainer.y = this.app.renderer.height / 2;
+        this.app.stage.addChild(this.myContainer);
         this.myEmitter.emit = true;
+        this.flameInterval = setInterval(() => {
+            var now = Date.now();
+
+            this.myEmitter.update((now - this.elapsed) * 0.001);
+            this.elapsed = now;
+        }, 60 / 1000);
     }
-    elapsed = Date.now();
 
-    // Update function every frame
-    update() {
-
-        // Update the next frame
-        requestAnimationFrame(this.update);
-
-        var now = Date.now();
-
-        // The emitter requires the elapsed
-        // number of seconds since the last update
-        this.myEmitter.update((now - this.elapsed) * 0.001);
-        this.elapsed = now;
-
-        // Should re-render the PIXI Stage
-        // renderer.render(stage);
-    };
-
-    // Start emitting
-
-
-    // Start the update
+    ClearStage() {
+        this.myEmitter.cleanup();
+        this.myEmitter.destroy();
+    }
 
 }
+

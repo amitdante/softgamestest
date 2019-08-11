@@ -21,7 +21,7 @@ export class TextImageMixer {
         let posX = (this.app.renderer.width / 2) - (this.content.length * this.fontSize);
         this.content.forEach((element: string | number) => {
             if (typeof element === 'string') {
-                let text = new PIXI.Text(`${element}`, { fontFamily: 'Arial', fontSize: this.fontSize, fill: 0xff1010, align: 'center' });
+                let text = new PIXI.Text(`${element}`, { fontFamily: 'Arial', fontSize: this.fontSize, fill: 0x11dbb3, align: 'center' });
                 this.sceneObjects.push(text);
                 text.position.set(posX, this.app.renderer.height / 2);
                 this.app.stage.addChild(text);
@@ -71,6 +71,14 @@ export class TextImageMixer {
         let bunny = new PIXI.Sprite(texture);
 
         return bunny;
+    }
+
+    ClearStage() {
+        this.sceneObjects.forEach((element: PIXI.Sprite) => {
+            if (element.texture != null)
+                element.destroy();
+        });
+        clearInterval(this.displayChangerInterval);
     }
 
     getRandomInt(min: number, max: number): number {
