@@ -1,7 +1,7 @@
 # softgamestest
 Steps to build:
 
-1)install devependencies using npm install
+1)install dependencies using npm install
 
 2)use `npm start` to start dev-server at port 3000
 
