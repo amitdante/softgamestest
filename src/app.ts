@@ -3,8 +3,9 @@ import * as PIXI from "pixi.js";
 export class SpriteExample {
     app: PIXI.Application;
 
-    constructor(app: PIXI.Application) {
+    constructor(app: PIXI.Application, texture: PIXI.BaseTexture) {
         this.app = app;
+        this.bunnyTexture = texture;
     }
     imagesToSpawn: number = 144;
     finalPos: Vector;
@@ -13,37 +14,33 @@ export class SpriteExample {
     movementInterval: NodeJS.Timeout;
     speed: number = 5;
     alpha: number = 0.005;
+    bunnyTexture: PIXI.BaseTexture;
 
     load() {
 
         this.finalPos = { x: this.app.renderer.width / 2, y: this.app.renderer.height / 1.5 };
 
-        this.app.loader.add('bunny', "./assets/bunny.jpg").load((loader: any, resources: any) => {
 
-            for (let i = 0; i < this.imagesToSpawn; i++) {
-                const bunny = new PIXI.Sprite(resources.bunny.texture);
 
-                this.imagesArray.push(bunny);
+        for (let i = 0; i < this.imagesToSpawn; i++) {
+            const texture = new PIXI.Texture(this.bunnyTexture);
+            const bunny = new PIXI.Sprite(texture);
 
-                bunny.x = this.app.renderer.width / 6;
-                bunny.y = (this.app.renderer.height / 1.5) - (i * 2);
-                bunny.scale.set(0.3, 0.3);
+            this.imagesArray.push(bunny);
 
-                this.app.stage.addChild(bunny);
-            }
-            let text = new PIXI.Text('FPS : ', { fontFamily: 'Arial', fontSize: 24, fill: 0xff1010, align: 'center' });
-            text.position.set(50, 50);
-            this.app.stage.addChild(text);
+            bunny.x = this.app.renderer.width / 6;
+            bunny.y = (this.app.renderer.height / 1.5) - (i * 2);
+            bunny.scale.set(0.3, 0.3);
 
-            this.currImageIndex = this.imagesArray.length;
+            this.app.stage.addChild(bunny);
+        }
 
-            this.movementInterval = setInterval(this.StartMovement.bind(this), 1000);
+        this.currImageIndex = this.imagesArray.length;
 
-            this.app.ticker.add(() => {
+        this.movementInterval = setInterval(this.StartMovement.bind(this), 1000);
 
-                text.text = "Fps : " + this.app.ticker.FPS.toFixed(2);
-            });
-        });
+
+
     }
 
     MoveSprite(obj: PIXI.Sprite) {
